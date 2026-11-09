@@ -24,7 +24,7 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
         │
         ▼
 ┌───────────────────────────────────────────────────┐
-│  1. Verificação da Condição de Carleman            │
+│  1. Verificação da Condição de Carleman           │
 │     └─ k momentos finitos (verificação de         │
 │        regularidade para identificabilidade       │
 │        da distribuição via método dos momentos)   │
@@ -32,7 +32,7 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  2. Análise da Variável Resposta                   │
+│  2. Análise da Variável Resposta                  │
 │     ├─ Suporte (contínuo / discreto / binário)    │
 │     ├─ Estatísticas descritivas                   │
 │     └─ Seleção da distribuição candidata:         │
@@ -42,14 +42,14 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  3. Estimação de Parâmetros                        │
+│  3. Estimação de Parâmetros                       │
 │     ├─ MoM  (Método dos Momentos)                 │
 │     └─ MLE  (Máxima Verossimilhança)              │
 └──────────────────────┬────────────────────────────┘
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  4. Teste de Aderência (Goodness-of-Fit)           │
+│  4. Teste de Aderência (Goodness-of-Fit)          │
 │     ├─ Kolmogorov–Smirnov  → distribuições        │
 │     │   contínuas (Normal, Gamma)                 │
 │     └─ Qui-Quadrado        → distribuições        │
@@ -60,17 +60,17 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  5. Escolha da Função de Ligação Canônica          │
+│  5. Escolha da Função de Ligação Canônica         │
 │     ├─ Normal    → Identidade:  g(μ) = μ          │
 │     ├─ Gamma     → Inversa:     g(μ) = 1/μ        │
 │     ├─ Poisson   → Logarítmica: g(μ) = ln(μ)      │
 │     └─ Binomial / Bernoulli → Logit:              │
-│         g(μ) = ln(μ / (1 − μ))                   │
+│         g(μ) = ln(μ / (1 − μ))                    │
 └──────────────────────┬────────────────────────────┘
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  6. Treinamento — IRLS                             │
+│  6. Treinamento — IRLS                            │
 │     ├─ Iteratively Reweighted Least Squares       │
 │     └─ Função de perda: Deviance da família       │
 │         correspondente                            │
@@ -78,7 +78,7 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  7. Calibração — Split Conformal Prediction        │
+│  7. Calibração — Split Conformal Prediction       │
 │     ├─ Conjunto de calibração extraído do treino  │
 │     ├─ Cálculo dos nonconformity scores           │
 │     └─ Construção dos intervalos de predição      │
@@ -87,7 +87,7 @@ Entrada: X (covariáveis), y (nota pro area do conhecimento)
                        │
                        ▼
 ┌───────────────────────────────────────────────────┐
-│  8. Avaliação — Conjunto de Teste                  │
+│  8. Avaliação — Conjunto de Teste                 │
 │     PICP · ACE · PINAW · MPIW                     │
 └───────────────────────────────────────────────────┘
 ```
@@ -247,7 +247,7 @@ Os resultados da avaliação do modelo são exportados para um painel interativo
 
 **ENEM 2024 — Microdados INEP**
 
-- **Variável resposta:** `NU_NOTA_MT` (nota de Matemática)
+- **Variável resposta:** `NU_NOTA_MT` (notas por competencia)
 - **Pré-processamento realizado:**
   - Remoção de registros com ausência (`TP_PRESENCA_MT ≠ 1`)
   - Tratamento de valores nulos nas covariáveis selecionadas
