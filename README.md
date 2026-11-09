@@ -157,9 +157,17 @@ Dado um nível de cobertura $1-\alpha$:
 2. Treina-se o GLM em $\mathcal{D}_{\text{train}}$
 3. Calculam-se os *nonconformity scores* em $\mathcal{D}_{\text{cal}}$:
 $$s_i = |y_i - \hat{y}_i|$$
-4. Define-se o quantil empírico $\hat{q} = \text{Quantil}\!\left(\{s_i\},\, \frac{\lceil(|\mathcal{D}_{\text{cal}}|+1)(1-\alpha)\rceil}{|\mathcal{D}_{\text{cal}}|}\right)$
-5. O intervalo de predição para um novo $x_{\text{new}}$ é:
-$$\hat{C}(x_{\text{new}}) = \left[\hat{y}_{\text{new}} - \hat{q},\; \hat{y}_{\text{new}} + \hat{q}\right]$$
+4. Define-se o quantil empírico:
+
+$$
+\hat{q} = \text{Quantil}\!\left(\{s_i\},\ \frac{\lceil(|\mathcal{D}_{\text{cal}}|+1)(1-\alpha)\rceil}{|\mathcal{D}_{\text{cal}}|}\right)
+$$
+
+O intervalo de predição para um novo $x_{\text{new}}$ é:
+
+$$
+\hat{C}(x_{\text{new}}) = \left[\hat{y}_{\text{new}} - \hat{q},\ \hat{y}_{\text{new}} + \hat{q}\right]
+$$
 
 Com garantia marginal de cobertura:
 $$\mathbb{P}\!\left(y_{\text{new}} \in \hat{C}(x_{\text{new}})\right) \geq 1 - \alpha$$
