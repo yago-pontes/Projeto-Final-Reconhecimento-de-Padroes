@@ -1,6 +1,7 @@
 import numpy as np
-from scipy.stats import kurtosis, skew, chi2, binom, goodness_of_fit, chisquare
+from scipy.stats import kurtosis, skew, goodness_of_fit, chisquare, binom, gamma, norm, chi2
 from abc import ABC, abstractmethod
+from typing import override
 
 class AdhesionTest(ABC):
 
