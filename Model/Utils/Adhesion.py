@@ -9,7 +9,7 @@ class AdhesionTest(ABC):
     def Adhesion(self, y: np.ndarray)->dict:
         pass
     @staticmethod
-    def CarlemanCriteria(y:np.ndarray, k: int)->bool:
+    def CarlemanCriteria(y:np.ndarray, k: int = 20)->bool:
         """
         Avalia se a sequência y satifaz o critério de Carleman para a determinabilidade da distribuição
         de probabilidade a partir de seus k momentos.
@@ -62,26 +62,24 @@ class AdhesionTest(ABC):
         variancia = np.var(y,ddof=1)
         assimetria = skew(y)
         curtose = kurtosis(y)
-    
-        if len(np.unique(y))==2:
+            
+        is_integer = np.all(np.isclose(y % 1, 0))
+
+        if len(np.unique(y)) == 2 and is_integer:
             distribuicao = "ber"
-        elif np.max(y)<=1 and np.min(y)>=0:
-            distribuicao = "bin"
-    
-        elif media != 0 and np.min(y)>=0:
-            if variancia/media < 1.25 and variancia/media > 0.8:
+
+        elif np.min(y) >= 0 and is_integer:
+            if media != 0 and (0.8 < variancia / media < 1.25):
                 distribuicao = "poiss"
             else:
-                distribuicao = "norm"
-    
-        elif np.min(y)<=0:
-            if np.abs(assimetria)<=0.5:
-                distribuicao = "norm"
-            else:   
-                distribuicao = "norm"
+                distribuicao = "bin" if variancia < media else "poiss"
+
+        elif np.min(y) > 0:
+            distribuicao = "gamma" if assimetria > 0.5 else "norm"
+
         else:
-            distribuicao = "gamma"
-    
+            distribuicao = "norm"
+        
         dicionario = {
             "media" : media,
             "variancia" : variancia,
@@ -89,7 +87,7 @@ class AdhesionTest(ABC):
             "curtose" : curtose,
             "dist" : distribuicao
         }
-    
+        
         return dicionario
 
 class Binom(AdhesionTest):
