@@ -9,11 +9,13 @@ class LinkFunction(ABC):
     incluindo métodos para calcular a função de ligação, sua inversa, derivada e deviance correspondente. 
     Além disso, fornece um método estático para realizar a regressão linear ponderada iterativamente (IRLS).
     """
+    def __init__(self, dist: str) -> None:
+        self.dist = dist
     @abstractmethod
     def Link(self, mu: np.ndarray)->np.ndarray:
         pass
     @abstractmethod
-    def Inverse(self, mu: np.ndarray)->np.ndarray:
+    def Inverse(self, eta: np.ndarray)->np.ndarray:
         pass
     @abstractmethod
     def Derivative(self, mu: np.ndarray)->np.ndarray:
@@ -25,11 +27,13 @@ class LinkFunction(ABC):
     def Deviance(self, y_pred: np.ndarray, y_true: np.ndarray)->np.ndarray:
         pass
     @staticmethod
-    def IterativelyReweightedLeastSquares(X: np.ndarray, W: np.ndarray, Z: np.ndarray)->np.ndarray:
+    def IterativelyReweightedLeastSquares(X: np.ndarray, W: np.ndarray, z: np.ndarray)->np.ndarray:
         XtW = X.T @ W
-        return np.linalg.solve(XtW @ X, XtW @ Z)
+        return np.linalg.solve(XtW @ X, XtW @ z)
 
 class Logit(LinkFunction):
+    def __init__(self, dist: str) -> None:
+        super().__init__(dist)
     @override
     def Link(self,mu:np.ndarray)->np.ndarray:
         """
@@ -38,24 +42,25 @@ class Logit(LinkFunction):
         mu = np.clip(mu, 1e-10, 1-1e-10)
         return np.log(mu / (1.0-mu))
     @override
-    def Inverse(self, mu: np.ndarray)->np.ndarray:
+    def Inverse(self, eta: np.ndarray)->np.ndarray:
         """
         Inversa da função de ligação da binomial/bernoulli, ligação logit inversa.
         """
-        return 1/(1+np.exp(-mu))
+        eta = np.clip(eta, -20, 20)
+        return 1/(1+np.exp(-eta))
     @override
     def Derivative(self, mu: np.ndarray)->np.ndarray:
         """
         Derivada da função de ligação da binomial/bernoulli, derivada ligação logit.
         """
-        mu = np.clip(mu, 1e-10, 1-1e10)
+        mu = np.clip(mu, 1e-10, 1-1e-10)
         return 1/(mu*(1-mu))
     @override
     def Variance(self, mu: np.ndarray)->np.ndarray:
         """
         Variância da função de ligação da binomial/bernoulli, função de variância pra ligação logit.
         """
-        mu = np.clip(mu, 1e-10, 1-1e10)
+        mu = np.clip(mu, 1e-10, 1-1e-10)
         return mu*(1-mu)
     @override
     def Deviance(self, y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
@@ -75,6 +80,8 @@ class Logit(LinkFunction):
         return deviance
 
 class Inverse(LinkFunction):
+    def __init__(self, dist: str) -> None:
+        super().__init__(dist)
     @override    
     def Link(self, mu: np.ndarray)->np.ndarray:
         """
@@ -83,12 +90,12 @@ class Inverse(LinkFunction):
         mu = np.clip(mu, 1e-10, None)
         return 1/mu
     @override
-    def Inverse(self, mu: np.ndarray)->np.ndarray:
+    def Inverse(self, eta: np.ndarray)->np.ndarray:
         """
         Inversa da função de ligação da Gamma, ligação inversa inversa.
         """
-        mu = np.clip(mu, 1e-10, None)
-        return 1/mu
+        eta = np.clip(eta, 1e-10, None)
+        return 1/eta
     @override
     def Derivative(self, mu: np.ndarray)->np.ndarray:
         """
@@ -115,7 +122,8 @@ class Inverse(LinkFunction):
         """
         if np.any(y_pred <= 0):
             raise ValueError("As previsões devem ser estritamente positivas para o modelo Inverso.")
-
+        if np.any(y_true <= 0):
+            raise ValueError("A distribuição gamma não admite valores iguais a 0. ")
         epsilon = 1e-15
         y_pred = np.clip(y_pred, epsilon, None)
         
@@ -124,12 +132,14 @@ class Inverse(LinkFunction):
         return Deviance
 
 class Identity(LinkFunction):
+    def __init__(self, dist: str) -> None:
+        super().__init__(dist)
     @override
     def Link(self, mu: np.ndarray)->np.ndarray:
         return mu
     @override
-    def Inverse(self, mu: np.ndarray)->np.ndarray:
-        return mu
+    def Inverse(self, eta: np.ndarray)->np.ndarray:
+        return eta
     @override
     def Derivative(self, mu: np.ndarray)->np.ndarray:
         return np.ones(len(mu))
@@ -151,6 +161,8 @@ class Identity(LinkFunction):
         return np.sum((y_pred - y_true) ** 2)
 
 class Log(LinkFunction):
+    def __init__(self, dist: str) -> None:
+        super().__init__(dist)
     @override
     def Link(self, mu: np.ndarray)->np.ndarray:
         """
@@ -159,12 +171,12 @@ class Log(LinkFunction):
         mu = np.clip(mu, 1e-10, None)
         return np.log(mu)
     @override
-    def Inverse(self, mu: np.ndarray)->np.ndarray:
+    def Inverse(self, eta: np.ndarray)->np.ndarray:
         """
         Inversa da função de ligação da Poisson, ligação logarítmica inversa.
         """
-        mu = np.clip(mu, -20, 20)
-        return np.exp(mu)
+        eta = np.clip(eta, -20, 20)
+        return np.exp(eta)
     @override
     def Derivative(self, mu: np.ndarray)->np.ndarray:
         """
