@@ -1,6 +1,6 @@
 import numpy as np
-from LinkFunctions import *
-from Aderencia import *
+from Utils.LinkFunctions import *
+from Utils.Aderencia import *
 class MLGBase:
     """
     Classe do GLM base sem predição conforme.
@@ -102,7 +102,7 @@ class MLGBase:
         for i in range(self.max_iter):
             eta = X @ self.beta
             mu = ligacao.Inverse(eta)
-            w = 1/(ligacao.Variance(mu)*(ligacao.Derivative(mu)**2))
+            w = 1/(ligacao.Variance(mu)*(ligacao.Derivative(mu)**2)) #trocar
             W = np.diag(w)
             z = eta + (y-mu)*ligacao.Derivative(mu)
             self.beta = LinkFunction.IterativelyReweightedLeastSquares(X,W,z)
